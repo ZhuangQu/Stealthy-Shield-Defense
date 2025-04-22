@@ -15,29 +15,29 @@ def Stealthy_Shield_Defense(
 
 
 def GPU_based_water_filling(
-    f_old: torch.Tensor,  # [batch_size, class_num]
-    q_old: torch.Tensor,  # [batch_size, class_num]
+    f: torch.Tensor,  # [batch_size, class_num]
+    q: torch.Tensor,  # [batch_size, class_num]
     ε: torch.Tensor,  # [batch_size]
 ) -> torch.Tensor:  # [batch_size, class_num]
-    m = (f_old - q_old).norm(dim=1, p=1) <= ε
+    m = (f - q).norm(dim=1, p=1) <= ε
 
-    W, index = (f_old / q_old).sort()
-    f = f_old.gather(dim=1, index=index)
-    q = q_old.gather(dim=1, index=index)
+    W, index = (f / q).sort()
+    fʼ = f.gather(dim=1, index=index)
+    qʼ = q.gather(dim=1, index=index)
     row = torch.arange(len(W))
 
-    F = f.cumsum(dim=1)
-    Q = q.cumsum(dim=1)
+    F = fʼ.cumsum(dim=1)
+    Q = qʼ.cumsum(dim=1)
     M = W[:, 1:] * Q[:, :-1] - F[:, :-1] <= ε.view(-1, 1) / 2
     j = M.int().argmin(dim=1)
     w_A = (F[row, j] + ε / 2) / Q[row, j]
 
-    F = f.flip(-1).cumsum(dim=1).flip(-1)
-    Q = q.flip(-1).cumsum(dim=1).flip(-1)
+    F = fʼ.flip(-1).cumsum(dim=1).flip(-1)
+    Q = qʼ.flip(-1).cumsum(dim=1).flip(-1)
     M = W[:, :-1] * Q[:, 1:] - F[:, 1:] >= -ε.view(-1, 1) / 2
     M = torch.cat([M, M.new_ones(len(M), 1)], dim=1)
     j = M.int().argmax(dim=1)
     w_B = (F[row, j] - ε / 2) / Q[row, j]
 
     m, w_A, w_B = m.view(-1, 1), w_A.view(-1, 1), w_B.view(-1, 1)
-    return q_old.where(m, f_old.clip(w_A * q_old, w_B * q_old))
+    return q.where(m, f.clip(w_A * q, w_B * q))
