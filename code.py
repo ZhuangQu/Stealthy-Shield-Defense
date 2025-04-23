@@ -1,6 +1,5 @@
 import torch
 
-
 def Stealthy_Shield_Defense(
     f: torch.Tensor,  # [batch_size, class_num]
     Dʼ: torch.Tensor,  # [class_num, class_num]
@@ -12,7 +11,6 @@ def Stealthy_Shield_Defense(
     q = Dʼ[y]
     H = -(f * f.log()).sum(dim=1)
     return GPU_based_water_filling(f, q, ε * H)
-
 
 def GPU_based_water_filling(
     f: torch.Tensor,  # [batch_size, class_num]
