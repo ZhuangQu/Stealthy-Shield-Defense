@@ -1,4 +1,6 @@
 # Stealthy Shield Defense: A Conditional Mutual Information-Based Approach against Black-Box Model Inversion Attacks
+[OpenReview](https://openreview.net/forum?id=p0DjhjPXl3),
+[ICLR](https://iclr.cc/virtual/2025/poster/28325)
 ```bibtex
 @inproceedings{zhuang2025stealthy,
 title={Stealthy Shield Defense: A Conditional Mutual Information-Based Approach against Black-Box Model Inversion Attacks},
